@@ -22,9 +22,9 @@ def read_df(query: str, params=()):
 
 def list_tickets(status: str | None = None) -> pd.DataFrame:
     if status:
-        return read_df("SELECT * FROM tickets WHERE status = ? ORDER BY created_at DESC", (status,))
+        return read_df("SELECT id, created_at, status, category, username, reason, steam_id, ko_fi, cftools_id, thread_id, channel_id FROM tickets WHERE status = ? ORDER BY created_at DESC", (status,))
     else:
-        return read_df("SELECT * FROM tickets ORDER BY created_at DESC")
+        return read_df("SELECT id, created_at, status, category, username, reason, steam_id, ko_fi, cftools_id, thread_id, channel_id FROM tickets ORDER BY created_at DESC")
 
 def queue_message(thread_id: int, message: str, created_by: str="dashboard"):
     con = sqlite3.connect(DB_PATH)
@@ -54,12 +54,16 @@ def set_ticket_status(thread_id: int, status: str):
 st.sidebar.header("Filters")
 status_filter = st.sidebar.selectbox("Status", options=["all", "open", "claimed", "closed"], index=0)
 
+category_filter = st.sidebar.text_input("Category contains", value="")
+
 if status_filter == "all":
     df = list_tickets(None)
 else:
     df = list_tickets(status_filter)
 
 st.subheader("Tickets")
+if category_filter:
+    df = df[df['category'].fillna('').str.contains(category_filter, case=False)]
 if df.empty:
     st.info("No tickets yet.")
 else:

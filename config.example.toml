@@ -15,3 +15,20 @@ staff_role_id = 123456789012345678
 [app]
 # Path to the SQLite DB file (can be relative)
 db_path = "tickets.db"
+
+
+# Optional forum channel to create a forum post per ticket (if you use Discord Forums)
+forum_channel_id = 0
+
+# One or more roles to ping when tickets are created (use numeric IDs)
+ping_role_ids = [ ]
+
+# Map of ticket categories to parent category/channel IDs where new ticket channels will be created.
+# Use a Discord CATEGORY channel's ID for grouping created ticket channels, or a plain text channel ID if you
+# prefer threads there. If both `category_parent_id` and `support_channel_id` are set, panel/threads use support_channel_id;
+# private channels use category_parent_id per mapping.
+[ticket_categories]
+# examples:
+# "General Support" = 111111111111111111
+# "Appeals" = 222222222222222222
+# "Bug Report" = 333333333333333333

@@ -2,7 +2,30 @@ import aiosqlite
 from typing import Optional, List, Dict, Any
 
 SCHEMA = """
+ALTER TABLE tickets ADD COLUMN category TEXT;
+ALTER TABLE tickets ADD COLUMN ko_fi TEXT;
+ALTER TABLE tickets ADD COLUMN steam_id TEXT;
+ALTER TABLE tickets ADD COLUMN cftools_id TEXT;
+ALTER TABLE tickets ADD COLUMN channel_id INTEGER;
+ALTER TABLE tickets ADD COLUMN forum_post_id INTEGER;
+
 CREATE TABLE IF NOT EXISTS tickets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    reason TEXT NOT NULL,
+    guild_id INTEGER NOT NULL,
+    thread_id INTEGER NOT NULL,
+    channel_id INTEGER,
+    forum_post_id INTEGER,
+    category TEXT,
+    ko_fi TEXT,
+    steam_id TEXT,
+    cftools_id TEXT,
+    status TEXT NOT NULL DEFAULT 'open', -- open | claimed | closed
+    claimed_by INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     username TEXT NOT NULL,
@@ -85,4 +108,13 @@ async def fetch_outbox(db_path: str):
 async def mark_outbox_delivered(db_path: str, outbox_id: int):
     async with aiosqlite.connect(db_path) as db:
         await db.execute("UPDATE outbox SET delivered = 1 WHERE id = ?", (outbox_id,))
+        await db.commit()
+
+
+async def add_ticket_full(db_path: str, *, user_id: int, username: str, reason: str, guild_id: int, thread_id: int | None, channel_id: int | None, forum_post_id: int | None, category: str | None, ko_fi: str | None, steam_id: str | None, cftools_id: str | None):
+    async with aiosqlite.connect(db_path) as db:
+        await db.execute(
+            "INSERT INTO tickets (user_id, username, reason, guild_id, thread_id, channel_id, forum_post_id, category, ko_fi, steam_id, cftools_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'open')",
+            (user_id, username, reason, guild_id, thread_id or 0, channel_id or 0, forum_post_id or 0, category, ko_fi, steam_id, cftools_id)
+        )
         await db.commit()
