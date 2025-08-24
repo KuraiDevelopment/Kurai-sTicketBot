@@ -1,0 +1,17 @@
+# Copy this to config.toml and fill in your values.
+# You can also set tokens via environment variables instead.
+
+[discord]
+# Bot token (or set DISCORD_BOT_TOKEN env var)
+bot_token = "YOUR_BOT_TOKEN_HERE"
+
+# Your server (guild) ID and a channel used as the ticket hub (threads will be created in it)
+guild_id = 123456789012345678
+support_channel_id = 123456789012345678
+
+# Staff role that can claim/close tickets
+staff_role_id = 123456789012345678
+
+[app]
+# Path to the SQLite DB file (can be relative)
+db_path = "tickets.db"
